@@ -75,6 +75,19 @@ export default function AlgorithmChatbot() {
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
 
+    const apiKey = process.env.REACT_APP_OPENROUTER_API_KEY;
+    
+    if (!apiKey) {
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "⚠️ API key not configured. Please add REACT_APP_OPENROUTER_API_KEY to your .env file."
+        }
+      ]);
+      return;
+    }
+
     const userMessage = { role: "user", content: input };
     setMessages((prev) => [...prev, userMessage]);
     setInput("");
@@ -87,8 +100,7 @@ export default function AlgorithmChatbot() {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization:
-              "Bearer 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",
+            Authorization: `Bearer ${apiKey}`,
             "HTTP-Referer": window.location.origin,
             "X-Title": "AlgoBot"
           },

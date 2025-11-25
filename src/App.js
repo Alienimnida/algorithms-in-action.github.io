@@ -10,6 +10,7 @@ import LeftPanel from './components/left-panel';
 import MidPanel from './components/mid-panel';
 import ControlPanel from './components/mid-panel/ControlPanel';
 import Settings from './components/top/Settings';
+import AlgorithmChatbot from './components/ChatBot/AlgorithmChatbot';
 import {
   resizeWindow, startRightDrag, startBottomDrag, endDrag, onDrag, collapseLeftDrag, collapseBottomDrag, collapseRightDrag, addEvent,
 } from './BorderResize';
@@ -195,6 +196,7 @@ function App() {
           <ControlPanel />
         </div>
       </div>
+      <AlgorithmChatbot />
     </GlobalProvider>
   );
 }

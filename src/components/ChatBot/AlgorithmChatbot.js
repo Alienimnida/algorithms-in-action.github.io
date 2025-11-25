@@ -75,7 +75,7 @@ export default function AlgorithmChatbot() {
   const sendMessage = async () => {
     if (!input.trim() || loading) return;
 
-    const apiKey = process.env.OPENROUTER_API_KEY;
+    const apiKey = process.env.REACT_APP_OPENROUTER_API_KEY;
     
     if (!apiKey) {
       setMessages((prev) => [

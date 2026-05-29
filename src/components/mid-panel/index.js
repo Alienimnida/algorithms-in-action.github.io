@@ -55,7 +55,15 @@ function MidPanel({ fontSize, fontSizeIncrement }) {
           </Popup>
         </div>
 
-        <div className="algorithmTitle" id={fontID}>{algorithm.name}</div>
+        <div className="algorithmTitle" id={fontID}>
+          <span className="algorithmTitleText">{algorithm.name}</span>
+          {algorithm.inputPresetLabel && algorithm.inputComplexity && (
+            <span className={`algorithmMeta preset-${algorithm.inputPreset}`}>
+              <span className="algorithmPresetBadge">{algorithm.inputPresetLabel}</span>
+              <span className="algorithmComplexityBadge">{algorithm.inputComplexity}</span>
+            </span>
+          )}
+        </div>
 
       </div>
       <div className="midPanelBody">

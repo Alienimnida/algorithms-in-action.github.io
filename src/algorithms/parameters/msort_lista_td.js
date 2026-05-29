@@ -1,84 +1,60 @@
 // Adapted from Quicksort - could rename a few things
 
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from 'react';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Radio from '@mui/material/Radio';
-import { withStyles } from '@mui/styles';
-import { genRandNumList, quicksortPerfectPivotArray } from './helpers/ParamHelper';
+import React, { useState, useEffect, useContext } from 'react';
+import { GlobalContext } from '../../context/GlobalState';
+import { GlobalActions } from '../../context/actions';
+import { generatePresetList, getPresetMeta } from './helpers/ParamHelper';
 import ListParam from './helpers/ListParam';
 import '../../styles/Param.scss';
 
-const DEFAULT_ARRAY_GENERATOR = genRandNumList.bind(null, 12, 1, 50);
-const DEFAULT_ARR = DEFAULT_ARRAY_GENERATOR();
+const DEFAULT_PRESET = 'random';
+const DEFAULT_SIZE = 12;
+const MIN_SIZE = 5;
+const MAX_SIZE = 30;
+const MIN_VALUE = 1;
+const MAX_VALUE = 50;
+const PRESET_OPTIONS = ['best', 'worst', 'random', 'adversarial'];
+const DEFAULT_ARR = generatePresetList(
+  DEFAULT_PRESET,
+  DEFAULT_SIZE,
+  'msort_lista_td',
+  MIN_VALUE,
+  MAX_VALUE,
+);
 const MERGE_SORT = 'Merge Sort (lists)';
 const MERGE_SORT_EXAMPLE = 'Please follow the example provided: 0,1,2,3,4';
-const UNCHECKED = {
-  random: false,
-  sortedAsc: false,
-  // bestCase: false,
-  sortedDesc: false
-};
-
-const BlueRadio = withStyles({
-  root: {
-    color: '#2289ff',
-    '&$checked': {
-      color: '#027aff',
-    },
-  },
-  checked: {},
-  // eslint-disable-next-line react/jsx-props-no-spreading
-})((props) => <Radio {...props} />)
 
 function MergesortParam() {
+  const { dispatch } = useContext(GlobalContext);
   const [message, setMessage] = useState(null)
   const [array, setArray] = useState(DEFAULT_ARR)
-  const [QSCase, setQSCase] = useState({
-    random: true,
-    sortedAsc: false,
-    // bestCase: false,
-    sortedDesc: false
-  });
+  const [preset, setPreset] = useState(DEFAULT_PRESET);
+  const [size, setSize] = useState(DEFAULT_SIZE);
+  const presetMeta = getPresetMeta(preset, 'msort_lista_td');
 
-    
-
-// XXX best case definitely not needed; could skip choice of cases
-  // function for choosing the type of input
-  const handleChange = (e) => {
-    switch (e.target.name) {
-      case 'sortedAsc':
-        setArray([...array].sort(function(a,b) {
-         return (+a) - (+b)
-        }));
-        break;
-      case 'sortedDesc':
-        setArray([...array].sort(function(a,b) {
-          return (+b) - (+a)
-         }));
-         break;
-      case 'random':
-        setArray(DEFAULT_ARRAY_GENERATOR());
-        break;
-      case 'bestCase':
-        setArray(quicksortPerfectPivotArray(Math.floor(Math.random() * 10), 25+(Math.floor(Math.random()*25))));
-        break;
-      default:
-        break;
-    }
-
-    setQSCase({ ...UNCHECKED, [e.target.name]: true })
-
-  }
+  const updateArray = (nextPreset, nextSize) => {
+    setMessage(null);
+    setArray(generatePresetList(nextPreset, nextSize, 'msort_lista_td', MIN_VALUE, MAX_VALUE));
+  };
 
   useEffect(
     () => {
       document.getElementById('startBtnGrp').click();
     },
-    [QSCase],
+    [preset, size],
   );
 
-  // XXX some QSCase.bestCase etc junk best cleaned up
+  useEffect(() => {
+    dispatch(GlobalActions.SET_INPUT_PRESET, {
+      preset,
+      label: presetMeta.label,
+      desc: presetMeta.desc,
+      complexity: presetMeta.complexity,
+      algorithmKey: 'msort_lista_td',
+    });
+  }, [dispatch, preset, presetMeta.label, presetMeta.desc, presetMeta.complexity]);
+
   return (
     <>
       <div className="form">
@@ -89,67 +65,50 @@ function MergesortParam() {
           formClassName="formLeft"
           DEFAULT_VAL={array}
           SET_VAL={setArray}
-          REFRESH_FUNCTION={
-            (() => {
-              if (QSCase.sortedAsc) {
-                return () => {
-                  return (DEFAULT_ARRAY_GENERATOR().sort(function (a,b) {
-                    return (+a) - (+b)
-                 }));
-                }
-              }
-              else if (QSCase.sortedDesc) {
-                return () => {
-                  return (DEFAULT_ARRAY_GENERATOR().sort(function (a,b) {
-                    return (+b) - (+a)
-                 }));
-                }
-              }
-              else if(QSCase.bestCase) {
-                return () => quicksortPerfectPivotArray(Math.floor(Math.random() * 10), 25+(Math.floor(Math.random()*25)));
-              }
-            })()
-          }
+          REFRESH_FUNCTION={() => generatePresetList(preset, size, 'msort_lista_td', MIN_VALUE, MAX_VALUE)}
           ALGORITHM_NAME={MERGE_SORT}
           EXAMPLE={MERGE_SORT_EXAMPLE}
           setMessage={setMessage}
         />
       </div>
-      <span className="generalText">Choose input format: &nbsp;&nbsp;</span>
-      {/* create a checkbox for Random array elements */}
-      <FormControlLabel
-        control={
-          <BlueRadio
-            checked={QSCase.random}
-            onChange={handleChange}
-            name="random"
+      <div className={`presetControls preset-${preset}`}>
+        <label className="presetLabel">
+          Preset
+          <select
+            className="presetSelect"
+            value={preset}
+            onChange={(e) => {
+              const nextPreset = e.target.value;
+              setPreset(nextPreset);
+              updateArray(nextPreset, size);
+            }}
+          >
+            {PRESET_OPTIONS.map((option) => (
+              <option key={option} value={option}>
+                {option}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="presetLabel">
+          Size
+          <input
+            className="sizeSlider"
+            type="range"
+            min={MIN_SIZE}
+            max={MAX_SIZE}
+            value={size}
+            onChange={(e) => {
+              const nextSize = Number(e.target.value);
+              setSize(nextSize);
+              updateArray(preset, nextSize);
+            }}
           />
-        }
-        label="Random"
-        className="checkbox"
-      />
-      <FormControlLabel
-        control={
-          <BlueRadio
-            checked={QSCase.sortedAsc}
-            onChange={handleChange}
-            name="sortedAsc"
-          />
-        }
-        label="Sorted (ascending)"
-        className="checkbox"
-      />
-      <FormControlLabel
-        control={
-          <BlueRadio
-            checked={QSCase.sortedDesc}
-            onChange={handleChange}
-            name="sortedDesc"
-          />
-        }
-        label="Sorted (descending)"
-        className="checkbox"
-      />
+          <span className="sizeValue">{size}</span>
+        </label>
+        <span className="presetBadge">{presetMeta.label}</span>
+        <span className="presetHint">{presetMeta.desc}</span>
+      </div>
       {/* render success/error message */}
       {message}
     </>

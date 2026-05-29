@@ -55,6 +55,79 @@ export const genRandNumList = (num, min, max) => {
   return list;
 };
 
+export const generatePresetList = (preset, size, algorithmKey, min = 1, max = 100) => {
+  const safeSize = Math.max(2, Number(size) || 2);
+  const base = genRandNumList(safeSize, min, max);
+  const normalizedPreset = preset || 'random';
+
+  if (normalizedPreset === 'random') {
+    return base;
+  }
+
+  if (normalizedPreset === 'best') {
+    return [...base].sort((a, b) => a - b);
+  }
+
+  if (normalizedPreset === 'worst') {
+    return [...base].sort((a, b) => b - a);
+  }
+
+  if (normalizedPreset === 'adversarial') {
+    if (algorithmKey && algorithmKey.toLowerCase().includes('quick')) {
+      return new Array(safeSize).fill(min);
+    }
+
+    const tightMax = Math.min(max, min + 3);
+    return genRandNumList(safeSize, min, tightMax);
+  }
+
+  return base;
+};
+
+export const getPresetComplexity = (preset, algorithmKey) => {
+  const normalized = preset || 'random';
+  const key = (algorithmKey || '').toLowerCase();
+  const isQuick = key.includes('quick');
+  const isMerge = key.includes('msort');
+  const isHeap = key.includes('heap');
+
+  if (isQuick) {
+    if (normalized === 'worst' || normalized === 'adversarial') {
+      return 'O(n^2)';
+    }
+    return 'O(n log n)';
+  }
+
+  if (isMerge || isHeap) {
+    return 'O(n log n)';
+  }
+
+  return '';
+};
+
+export const getPresetMeta = (preset, algorithmKey) => {
+  const normalized = preset || 'random';
+  const isQuick = algorithmKey && algorithmKey.toLowerCase().includes('quick');
+  const complexity = getPresetComplexity(normalized, algorithmKey);
+
+  if (normalized === 'best') {
+    return { label: 'Best case', desc: 'Sorted ascending input.', complexity };
+  }
+
+  if (normalized === 'worst') {
+    return { label: 'Worst case', desc: 'Sorted descending input.', complexity };
+  }
+
+  if (normalized === 'adversarial') {
+    if (isQuick) {
+      return { label: 'Adversarial', desc: 'Many duplicates (pivot-unfriendly).', complexity };
+    }
+    return { label: 'Adversarial', desc: 'Clustered values (low variance).', complexity };
+  }
+
+  return { label: 'Random case', desc: 'Uniform random input.', complexity };
+};
+
 /**
  * Generate a list of unique random numbers given size.
  * @param {*} num the length of the list to generate.

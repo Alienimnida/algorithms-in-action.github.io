@@ -230,6 +230,11 @@ export const GlobalActions = {
       instructions,
       extraInfo,
       param,
+      inputPreset: null,
+      inputPresetLabel: null,
+      inputPresetDesc: null,
+      inputComplexity: null,
+      inputAlgorithmKey: null,
       pseudocode: procedurePseudocode,
       collapse:
         state === undefined || state.collapse === undefined
@@ -411,11 +416,26 @@ export const GlobalActions = {
     ...state,
     lineExplanation: updateLineExplan,
   }),
+
+  SET_INPUT_PRESET: (state, {
+    preset,
+    label,
+    desc,
+    complexity,
+    algorithmKey,
+  }) => ({
+    ...state,
+    inputPreset: preset,
+    inputPresetLabel: label,
+    inputPresetDesc: desc,
+    inputComplexity: complexity,
+    inputAlgorithmKey: algorithmKey,
+  }),
 };
 
-export function dispatcher(state, setState) {
+export function dispatcher(setState) {
   return (action, params) => {
-    setState(action(state, params));
+    setState((prevState) => action(prevState, params));
   };
 }
 

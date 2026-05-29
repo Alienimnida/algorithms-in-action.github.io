@@ -202,3 +202,67 @@
 .generalText {
   color: var(--mid-control-font);
 }
+
+.presetControls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.presetControls.preset-best .presetBadge {
+  background: #2e7d32;
+}
+
+.presetControls.preset-worst .presetBadge {
+  background: #c62828;
+}
+
+.presetControls.preset-random .presetBadge {
+  background: #1565c0;
+}
+
+.presetControls.preset-adversarial .presetBadge {
+  background: #6d4c41;
+}
+
+.presetLabel {
+  color: var(--mid-control-font);
+  font-size: 0.9em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.presetSelect {
+  background: var(--mid-control-bg);
+  color: var(--mid-control-font);
+  border: 1px solid var(--mid-control-param-border);
+  border-radius: 4px;
+  padding: 4px 6px;
+}
+
+.sizeSlider {
+  width: 140px;
+}
+
+.sizeValue {
+  min-width: 20px;
+  text-align: right;
+}
+
+.presetBadge {
+  color: #ffffff;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 0.8em;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.presetHint {
+  color: var(--mid-control-font);
+  font-size: 0.85em;
+  opacity: 0.85;
+}

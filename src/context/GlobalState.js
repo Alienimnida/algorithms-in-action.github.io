@@ -1,4 +1,4 @@
-import React, { createContext, useState } from 'react';
+import React, { createContext, useMemo, useState } from 'react';
 // generic version of collapseChunkPlugin - could probably adapt code and
 // delete some others XXX
 import { initGlobalAlgorithmGetter } from '../algorithms/controllers/collapseChunkPlugin';
@@ -27,7 +27,7 @@ export const GlobalProvider = ({ children }) => {
   const [state, setState] = useState(init);
   // Think of this as partial function application to get state & setState in scope
   // for later calls from elsewhere in the app.
-  const dispatch = dispatcher(state, setState);
+  const dispatch = useMemo(() => dispatcher(setState), [setState]);
 
   const globalState = {
     algorithm: state,

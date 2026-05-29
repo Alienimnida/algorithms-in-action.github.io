@@ -23,6 +23,55 @@ $midTitleFontSize: 0.89em;
       font-weight: 300;
       text-overflow: ellipsis;
       white-space: nowrap;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .algorithmTitleText {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .algorithmMeta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: 8px;
+    }
+
+    .algorithmMeta.preset-best .algorithmPresetBadge {
+      background: #2e7d32;
+    }
+
+    .algorithmMeta.preset-worst .algorithmPresetBadge {
+      background: #c62828;
+    }
+
+    .algorithmMeta.preset-random .algorithmPresetBadge {
+      background: #1565c0;
+    }
+
+    .algorithmMeta.preset-adversarial .algorithmPresetBadge {
+      background: #6d4c41;
+    }
+
+    .algorithmPresetBadge {
+      color: #ffffff;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.8em;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .algorithmComplexityBadge {
+      border: 1px solid var(--mid-control-param-border);
+      border-radius: 999px;
+      padding: 2px 8px;
+      font-size: 0.8em;
+      color: var(--mid-header-font);
     }
 
   }
